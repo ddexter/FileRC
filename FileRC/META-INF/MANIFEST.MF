@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: FileTrackerPlugin
-Bundle-SymbolicName: FileTrackerPlugin;singleton:=true
-Bundle-Version: 0.2.23112011.2
+Bundle-Name: FileRC
+Bundle-SymbolicName: FileRC;singleton:=true
+Bundle-Version: 0.1.20120119.1
 Bundle-Activator: filetrackerplugin.FileTrackerPlugin
 Require-Bundle: sqlite.jdbc;bundle-version="1.0.0",
  JavaML;bundle-version="1.0.0",
