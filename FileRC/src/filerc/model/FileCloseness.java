@@ -1,4 +1,4 @@
-package filetrackerplugin.model;
+package filerc.model;
 
 public class FileCloseness implements Comparable<FileCloseness> {
 	private double closeness;

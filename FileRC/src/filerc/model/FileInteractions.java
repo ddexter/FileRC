@@ -1,4 +1,4 @@
-package filetrackerplugin.model;
+package filerc.model;
 
 import java.lang.Math;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package filetrackerplugin.model;
+package filerc.model;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;

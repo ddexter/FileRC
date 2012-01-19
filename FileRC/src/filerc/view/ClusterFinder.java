@@ -1,4 +1,4 @@
-package filetrackerplugin.view;
+package filerc.view;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -16,9 +16,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import filetrackerplugin.model.FTTreeContentProvider;
-import filetrackerplugin.model.FTTreeLabelProvider;
-import filetrackerplugin.model.TreeNode;
+import filerc.model.FTTreeContentProvider;
+import filerc.model.FTTreeLabelProvider;
+import filerc.model.TreeNode;
 
 public class ClusterFinder extends ViewPart {
 	private TreeViewer viewer;

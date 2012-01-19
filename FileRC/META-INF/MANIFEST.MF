@@ -3,15 +3,15 @@ Bundle-ManifestVersion: 2
 Bundle-Name: FileRC
 Bundle-SymbolicName: FileRC;singleton:=true
 Bundle-Version: 0.1.20120119.1
-Bundle-Activator: filetrackerplugin.FileTrackerPlugin
-Require-Bundle: sqlite.jdbc;bundle-version="1.0.0",
- JavaML;bundle-version="1.0.0",
- ApacheCommons;bundle-version="1.0.0",
+Bundle-Activator: filerc.FileRC
+Require-Bundle: JavaML;bundle-version="1.0.0",
+ ApacheCommonsLang3;bundle-version="1.0.0",
  org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.ui.ide;bundle-version="3.7.0",
- org.eclipse.core.resources;bundle-version="3.7.100",
- org.eclipse.ui.views;bundle-version="3.6.0"
+ org.eclipse.ui.ide;bundle-version="3.5.2",
+ org.eclipse.ui.views;bundle-version="3.4.1",
+ org.eclipse.core.resources;bundle-version="3.5.2",
+ SQLiteJDBC;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .

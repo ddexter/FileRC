@@ -1,4 +1,4 @@
-package filetrackerplugin;
+package filerc;
 
 import org.eclipse.ui.IStartup;
 

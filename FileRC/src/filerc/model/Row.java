@@ -1,4 +1,4 @@
-package filetrackerplugin.model;
+package filerc.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;

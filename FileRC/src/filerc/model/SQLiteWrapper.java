@@ -1,4 +1,4 @@
-package filetrackerplugin.model;
+package filerc.model;
 
 import java.io.File;
 import java.sql.Statement;

@@ -1,12 +1,12 @@
-package filetrackerplugin;
+package filerc;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 
-import filetrackerplugin.model.FileInteractions;
-import filetrackerplugin.view.ClusterFinder;
+import filerc.model.FileInteractions;
+import filerc.view.ClusterFinder;
 
 public class FCAnalyzerVAD implements IViewActionDelegate {
 	private ClusterFinder view;

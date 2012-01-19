@@ -1,4 +1,4 @@
-package filetrackerplugin.view;
+package filerc.view;
 
 import org.eclipse.swt.SWT;
 
@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
-import filetrackerplugin.model.Row;
+import filerc.model.Row;
 
 public class DBMonitor extends ViewPart {
 	

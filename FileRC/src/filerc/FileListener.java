@@ -1,4 +1,4 @@
-package filetrackerplugin;
+package filerc;
 
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -10,9 +10,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.EditorReference;
 
-import filetrackerplugin.model.FileInteractions;
-import filetrackerplugin.model.Pair;
-import filetrackerplugin.view.DBMonitor;
+import filerc.model.FileInteractions;
+import filerc.model.Pair;
+import filerc.view.DBMonitor;
 
 @SuppressWarnings("restriction")
 public class FileListener {
