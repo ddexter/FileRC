@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+      		class="filerc.Startup">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+		<category
+			name="FileRC"
+			id="FileRC">
+		</category>
+		<view
+			name="FileRC - DB Monitor"
+			category="FileRC"
+			class="filerc.view.DBMonitor"
+			id="filerc.view.DBM">
+		</view>
+		<view
+			name="FileRC - File Recommender"
+			category="FileRC"
+			class="filerc.view.FileRecommender"
+			id="filerc.view.FR">
+		</view>
+		<view
+			name="FileRC - File Clusters"
+			category="FileRC"
+			class="filerc.view.ClusterFinder"
+			id="filerc.view.FC">
+		</view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.TaskList"
+               relationship="right"
+               id="filerc.view.DBM">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension
+            point="org.eclipse.ui.viewActions">
+         <viewContribution
+         	id="filerc.FRAnalyzerVC"
+         	targetID="filerc.view.FR">
+         		<action
+         			id="filerc.FRAnalyzerVA"
+         			class="filerc.FRAnalyzerVAD"
+         			label="Recommend Files"
+         			toolbarPath="analyze"
+         			style="push">
+         		</action>
+         </viewContribution>
+    </extension>
+        <extension
+            point="org.eclipse.ui.viewActions">
+         <viewContribution
+         	id="filerc.FCAnalyzerVC"
+         	targetID="filerc.view.FC">
+         		<action
+         			id="filerc.FCAnalyzerVA"
+         			class="filerc.FCAnalyzerVAD"
+         			label="Find Clusters"
+         			toolbarPath="analyze"
+         			style="push">
+         		</action>
+         </viewContribution>
+      </extension>
+        <extension
+            point="org.eclipse.ui.viewActions">
+         <viewContribution
+         	id="filerc.ClearSamplesVC"
+         	targetID="filerc.view.DBM">
+         		<action
+         			id="filerc.ClearSamplesVA"
+         			class="filerc.ClearSamplesVAD"
+         			label="Clear Samples"
+         			toolbarPath="DB"
+         			style="push">
+         		</action>
+         </viewContribution>
+      </extension>
+</plugin>
