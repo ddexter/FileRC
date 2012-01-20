@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SQLiteJDBC
+Bundle-SymbolicName: SQLiteJDBC
+Bundle-Version: 1.0.0
+Export-Package: org.ibex.nestedvm,
+ org.ibex.nestedvm.util,
+ org.sqlite
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
