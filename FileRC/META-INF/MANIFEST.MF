@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FileRC
 Bundle-SymbolicName: FileRC;singleton:=true
-Bundle-Version: 0.1.20120119.1
+Bundle-Version: 0.1.20120121.1
 Bundle-Activator: filerc.FileRC
 Require-Bundle: JavaML;bundle-version="1.0.0",
  ApacheCommonsLang3;bundle-version="1.0.0",
