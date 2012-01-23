@@ -29,7 +29,7 @@ public class FileListener {
 		
 		@Override
 		public void partClosed(IWorkbenchPartReference partRef) {
-			if(partRef.getId().equals("filetrackerplugin.view.DBM")) {
+			if(partRef.getId().equals("filerc.view.DBM")) {
 				dbm = null;
 			}
 		}
@@ -37,7 +37,7 @@ public class FileListener {
 		@Override
 		public void partOpened(IWorkbenchPartReference partRef) {
 			// Opened part is a DB monitor instance
-			if(partRef.getId().equals("filetrackerplugin.view.DBM")) {
+			if(partRef.getId().equals("filerc.view.DBM")) {
 				FileInteractions model = FileInteractions.getInstance();
 				dbm = (DBMonitor) partRef.getPart(true);
 				
@@ -64,6 +64,9 @@ public class FileListener {
 						input.getFile().getProject().getName());
 					
 					model.addCounts(newFile);
+					
+					// Store the file as the most recently visited
+					model.updateRecentFile(newFile);
 					
 					// Update the views
 					if(dbm != null) {

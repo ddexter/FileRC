@@ -12,7 +12,7 @@ public class FileRC extends AbstractUIPlugin implements
 	IWorkbenchListener {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "FileTrackerPlugin"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "FileRC"; //$NON-NLS-1$
 
 	// The shared instance
 	private static FileRC plugin;

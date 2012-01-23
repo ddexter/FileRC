@@ -31,6 +31,7 @@ public class FileInteractions {
 	private static final String DEFAULT_DB = "FileTrackerDB";
 	private final IWorkbench workbench;
 	private String dbName;
+	private Pair recentFile;
 	private SQLiteWrapper db;
 	
 	private FileInteractions() {
@@ -62,6 +63,8 @@ public class FileInteractions {
 				Row row = new Row(openedFile.getFile(), pair.getFile(),
 					openedFile.getProject());
 				rows.add(row);
+				Row selfRow = new Row(pair.getFile(), pair.getFile(),
+					pair.getProject());
 				
 				/*
 				 * Increment the entry count if it exists, otherwise
@@ -69,6 +72,9 @@ public class FileInteractions {
 				 */
 				if(db.entryExists(row)) {
 					db.incCount(row);
+					if(!pair.equals(openedFile)) {
+						db.incCount(selfRow);
+					}
 				}
 				else {
 					row.setCount(1);
@@ -82,6 +88,10 @@ public class FileInteractions {
 		db.clearSamples();
 	}
 
+	public void updateRecentFile(Pair f) {
+		this.recentFile = f;
+	}
+	
 	// Access this singleton class
 	public static synchronized FileInteractions getInstance() {
 		if(instance == null)
@@ -95,101 +105,83 @@ public class FileInteractions {
 	}
 	
 	public ArrayList<TreeNode> getSamplesTree() {
+		String project = this.recentFile.getProject();
 		ArrayList<TreeNode> samplesTree = new ArrayList<TreeNode>();
-		ArrayList<Pair> openFiles = listOpenFiles();
-		Set<String> projects = new HashSet<String>();
+		Set<Pair> projFiles = new HashSet<Pair>();
+		HashMap<Row, Integer> simMtx = new HashMap<Row, Integer>();
 		
-		// First get the list of open projects
-		for(Pair pair : openFiles) {
-			projects.add(pair.getProject());
-		}
+		// Get list of open files related to the last focused tab
+		ArrayList<Pair> openFiles = this.listOpenProjectFiles(project);
 		
 		// Get all related entries for each open file and project
-		for(String project : projects) {
-			Set<Pair> openProjFiles = new HashSet<Pair>();
-			Set<Pair> projFiles = new HashSet<Pair>();
-			HashMap<Row, Integer> simMtx = new HashMap<Row, Integer>();
-			
-			// Sort files by project
-			for(Pair pair : openFiles) {
-				if(pair.getProject().equals(project)) {
-					openProjFiles.add(pair);
-					projFiles.add(pair);
-				}
-			}
+		ArrayList<Row> projQueries = 
+			db.getRelatedFiles(new ArrayList<Pair>(openFiles));
 		
-			ArrayList<Row> projQueries = 
-				db.getRelatedFiles(new ArrayList<Pair>(openProjFiles));
-		
-			// Add all file names to the projFiles list
-			for(Row r : projQueries) {
-				projFiles.add(new Pair(r.getFile1(), project));
-				projFiles.add(new Pair(r.getFile2(), project));
-				simMtx.put(r, r.getCount());
-			}
-			// Convert these sets as arraylists to access get method
-			ArrayList<Pair> oPF = new ArrayList<Pair>(openProjFiles);
-			ArrayList<Pair> pF = new ArrayList<Pair>(projFiles);
-			
-			// Calculate center of mass of open files
-			double[] cm = new double[oPF.size()];
-			int oPFSize = oPF.size();
-			for(int i = 0; i < oPFSize; ++i) {
-				double count = 0;
-				/*
-				 *  Each dimension needs an average of the distances with other
-				 *  open files.  Each open file is given a dimension, so the
-				 *  center of mass vector will be in R^m for m open files
-				 */
-				for(int j = 0; j < oPFSize; ++j) {
-					Row index = new Row(oPF.get(i).getFile(),
-						oPF.get(j).getFile(), project);
-					
-					if(simMtx.containsKey(index))
-						count += (double) simMtx.get(index);
-				}
-				
-				cm[i] = count / ((double) oPFSize);
-			}
-		
-			// Calculate euclidean distance from center of mass of open files
-			int pFSize = pF.size();
-			ArrayList<FileCloseness> fCs = new ArrayList<FileCloseness>();
-			for(int i = 0; i < pFSize; ++i) {
-				// closeness stores distance from the center of mass
-				double closeness = 0;
-				Pair p = pF.get(i);
-				for(int j = 0; j < oPFSize; ++j) {
-					// If the file is already open, don't suggest it
-					if(oPF.contains(p)) {
-						break;
-					}
-					
-					Row index = new Row(oPF.get(j).getFile(),
-						p.getFile(), project);
-					
-					if(simMtx.containsKey(index)) {
-						double d = (cm[j] - ((double) simMtx.get(index)));
-						closeness += (d * d);
-					}
-				}
-				
-				// Find Euclidean distance once all dimension distances found
-				closeness = Math.sqrt(closeness);
-				
-				if(!oPF.contains(p)) {
-					fCs.add(new FileCloseness(p.getFile(), closeness));
-				}
-			}
-			
-			// Display the recommendations in sorted order with highest first
-			Collections.sort(fCs);
-			ArrayList<TreeNode> children = new ArrayList<TreeNode>();
-			for(int i = 0; i < fCs.size(); ++i) {
-				children.add(new TreeNode(fCs.get(i).getFile()));
-			}
-			samplesTree.add(new TreeNode(project, children));
+		// Add all file names to the projFiles list
+		for(Row r : projQueries) {
+			projFiles.add(new Pair(r.getFile1(), project));
+			projFiles.add(new Pair(r.getFile2(), project));
+			simMtx.put(r, r.getCount());
 		}
+		
+		// Convert these sets to arraylists to access get method
+		ArrayList<Pair> pF = new ArrayList<Pair>(projFiles);
+		
+		ArrayList<Double> coefficients = new ArrayList<Double>();
+		
+		// Get the denominator simMtx[f][f]
+		Row index = new Row(this.recentFile.getFile(),
+			this.recentFile.getFile(), project);
+		double totalCounts = (double) simMtx.get(index);
+		
+		/*
+		 *  Calculate the weights for the weighted average with respect to the
+		 *  most recent file
+		 */
+		for(Pair f : openFiles) {
+			index = new Row(this.recentFile.getFile(), f.getFile(),
+				project);
+			
+			// sim(recent, open) = counts(recent, open) / counts(recent, recent)
+			if(simMtx.containsKey(index))
+    			coefficients.add((double) simMtx.get(index) / totalCounts);
+			else
+				coefficients.add(0.0);
+		}
+		
+		/*
+		 *  Calculate the scores for all files in the project
+		 *  score(f_i) = sum(coefficients[j] * sim(openFile_j, f_i), j)
+		 */
+		ArrayList<FileCloseness> scores = new ArrayList<FileCloseness>();
+		for(Pair f : pF) {
+			// Skip scoring for files which are already open
+			if(openFiles.contains(f))
+				continue;
+			
+			double score =  0.0;
+			for(int i = 0; i < openFiles.size(); ++i) {
+				Row i0 = new Row(openFiles.get(i).getFile(),
+					f.getFile(), project);
+				Row i1 = new Row(openFiles.get(i).getFile(),
+					openFiles.get(i).getFile(), project);
+				
+				if(simMtx.containsKey(i0))
+					score += (double) simMtx.get(i0) / (double) simMtx.get(i1) *
+					    coefficients.get(i);
+			}
+			scores.add(new FileCloseness(f.getFile(), score));
+		}
+		
+		// Display the recommendations in sorted order with highest first
+		Collections.sort(scores);
+		Collections.reverse(scores);
+		ArrayList<TreeNode> children = new ArrayList<TreeNode>();
+		for(int i = 0; i < scores.size(); ++i) {
+			children.add(new TreeNode(scores.get(i).getFile()));
+		}
+		
+		samplesTree.add(new TreeNode(project, children));
 		
 		return samplesTree;
 	}
@@ -272,7 +264,7 @@ public class FileInteractions {
 		return db.getProjectSamples(project);
 	}
 	
-	public ArrayList<Pair> listOpenFiles() {
+	private ArrayList<Pair> listOpenFiles() {
 		// files and projects form a tuple that describe the file name and the
 		// project that it belongs to respectively.
 		ArrayList<Pair> fileProjectPairs = new ArrayList<Pair>();
@@ -301,5 +293,21 @@ public class FileInteractions {
 		Collections.sort(fileProjectPairs);
 		
 		return fileProjectPairs;
+	}
+	
+	private ArrayList<Pair> listOpenProjectFiles(String project) {
+		ArrayList<Pair> filePairs = new ArrayList<Pair>();
+		ArrayList<Pair> allOpenFiles = this.listOpenFiles();
+		
+		for(Pair pair : allOpenFiles) {
+			if(project.equals(pair.getProject()))
+				filePairs.add(pair);
+		}
+		
+		return filePairs;
+	}
+	
+	private double sim(Pair f1, Pair f2) {
+		return 0.0;
 	}
 }
