@@ -72,14 +72,15 @@ public class FileInteractions {
 				 */
 				if(db.entryExists(row)) {
 					db.incCount(row);
-					if(!pair.equals(openedFile)) {
-						db.incCount(selfRow);
-					}
 				}
 				else {
 					row.setCount(1);
 					db.addRow(row);
 				}
+				
+				// Increment total file interaction counter for each open file
+				if(!pair.equals(openedFile))
+					db.incCount(selfRow);
 			}
 		}
 	}
