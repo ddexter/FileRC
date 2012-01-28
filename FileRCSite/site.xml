@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/FileRC_1.1.0.201201280331.jar" id="FileRC" version="1.1.0.201201280331">
+   <feature url="features/FileRC_1.1.3.jar" id="FileRC" version="1.1.3">
       <category name="FileRC"/>
    </feature>
-   <category-def name="FileRC" label="FileRC"/>
+   <category-def name="FileRC" label="FIleRC"/>
 </site>

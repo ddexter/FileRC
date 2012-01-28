@@ -2,7 +2,7 @@
 <feature
       id="FileRC"
       label="FileRC Plugin"
-      version="1.1.0.qualifier">
+      version="1.1.3">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -15,13 +15,6 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
-
-   <plugin
-         id="FileRC"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
 
    <plugin
          id="ApacheCommonsLang3"
@@ -39,6 +32,13 @@
 
    <plugin
          id="SQLiteJDBC"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="FileRC"
          download-size="0"
          install-size="0"
          version="0.0.0"
