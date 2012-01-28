@@ -5,18 +5,29 @@ import java.util.ArrayList;
 public class TreeNode {
 	private String text;
 	private TreeNode parent;
+	private double score;
 	
 	private ArrayList<TreeNode> children;
 	
 	public TreeNode(String text) {
 		this.text = text;
 		this.parent = null;
+		this.score = score;
 		
 		this.children = new ArrayList<TreeNode>();
 	}
 	
-	public TreeNode(String text, ArrayList<TreeNode> children) {
+	public TreeNode(String text, double score) {
 		this.text = text;
+		this.parent = null;
+		this.score = score;
+		
+		this.children = new ArrayList<TreeNode>();
+	}
+	
+	public TreeNode(String text, double score, ArrayList<TreeNode> children) {
+		this.text = text;
+		this.score = score;
 		
 		if(children != null)
 			this.children = children;
@@ -48,6 +59,10 @@ public class TreeNode {
 	
 	public String getText() {
 		return text;
+	}
+	
+	public double getScore() {
+		return score;
 	}
 	
 	public boolean hasChildren() {

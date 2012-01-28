@@ -21,11 +21,37 @@ public class FileListener {
 	
 	// Handle parts opening and closing
 	private final IPartListener2 partListener = new IPartListener2() {
+		private Pair extractFilePair(IWorkbenchPartReference partRef) {
+			IEditorPart editor =
+				((EditorReference) partRef).getEditor(false);
+			if(editor != null) {
+				IFileEditorInput input =
+					(IFileEditorInput) editor.getEditorInput();
+				Pair newFile = new Pair(
+					input.getFile().getFullPath().toString(),
+					input.getFile().getProject().getName());
+				
+				return newFile;
+			}
+			else
+				return null;
+			
+		}
 		@Override
 		public void partActivated(IWorkbenchPartReference partRef) {}
 
 		@Override
-		public void partBroughtToTop(IWorkbenchPartReference partRef) {}
+		public void partBroughtToTop(IWorkbenchPartReference partRef) {
+			FileInteractions model = FileInteractions.getInstance();
+			
+			if(partRef instanceof EditorReference) {
+				
+				Pair filePair = extractFilePair(partRef);
+				
+				if(filePair != null)
+    				model.updateRecentFile(filePair);
+			}
+		}
 		
 		@Override
 		public void partClosed(IWorkbenchPartReference partRef) {
@@ -52,17 +78,9 @@ public class FileListener {
 			 * refresh both the DB monitor and file recommender windows if open
 			 */
 			if(partRef instanceof EditorReference) {
-				FileInteractions model = FileInteractions.getInstance();
-				
-				IEditorPart editor =
-					((EditorReference) partRef).getEditor(false);
-				if(editor != null) {
-					IFileEditorInput input =
-						(IFileEditorInput) editor.getEditorInput();
-					Pair newFile = new Pair(
-						input.getFile().getFullPath().toString(),
-						input.getFile().getProject().getName());
-					
+    			FileInteractions model = FileInteractions.getInstance();
+			
+			    Pair newFile = extractFilePair(partRef);
 					model.addCounts(newFile);
 					
 					// Store the file as the most recently visited
@@ -73,7 +91,6 @@ public class FileListener {
 						dbm.getViewer().setInput(model.getAllSamples());
 						dbm.getViewer().refresh();
 					}
-				}
 			}
 		}
 

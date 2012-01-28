@@ -1,8 +1,6 @@
 package filerc.model;
 
-import java.lang.Math;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,6 +44,8 @@ public class FileInteractions {
 		this.workbench = workbench;
 		
 		db = new SQLiteWrapper(this.dbName);
+		
+		recentFile = new Pair("", "");
 	}
 	
 	public void addCounts(Pair openedFile) {
@@ -105,6 +105,10 @@ public class FileInteractions {
 	}
 	
 	public ArrayList<TreeNode> getSamplesTree() {
+		// Exit silently if there is no recent project
+		if(recentFile.getFile().equals(""))
+			return new ArrayList<TreeNode>();
+		
 		String project = recentFile.getProject();
 		ArrayList<TreeNode> samplesTree = new ArrayList<TreeNode>();
 		Set<Pair> projFiles = new HashSet<Pair>();
@@ -130,8 +134,8 @@ public class FileInteractions {
 		ArrayList<Double> coefficients = new ArrayList<Double>();
 		
 		// Get the denominator simMtx[f][f]
-		Row index = new Row(this.recentFile.getFile(),
-			this.recentFile.getFile(), project);
+		Row index = new Row(recentFile.getFile(), recentFile.getFile(),
+			project);
 		double totalCounts = (double) simMtx.get(index);
 		
 		/*
@@ -176,9 +180,9 @@ public class FileInteractions {
 		// Display the recommendations in sorted order with highest first
 		Collections.sort(scores);
 		Collections.reverse(scores);
-		ArrayList<TreeNode> children = new ArrayList<TreeNode>();
 		for(int i = 0; i < scores.size(); ++i) {
-			samplesTree.add(new TreeNode(scores.get(i).getFile()));
+			samplesTree.add(new TreeNode(scores.get(i).getFile(),
+				scores.get(i).getCloseness()));
 		}
 		
 		return samplesTree;
@@ -303,9 +307,5 @@ public class FileInteractions {
 		}
 		
 		return filePairs;
-	}
-	
-	private double sim(Pair f1, Pair f2) {
-		return 0.0;
 	}
 }

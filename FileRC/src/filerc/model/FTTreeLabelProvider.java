@@ -1,5 +1,7 @@
 package filerc.model;
 
+import java.text.DecimalFormat;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -26,14 +28,29 @@ public class FTTreeLabelProvider extends LabelProvider {
 		    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 			IContentType contentType = IDE.getContentType(file);
 			ImageDescriptor imageDescriptor =
-			    PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(file.getName(), contentType);
+			    PlatformUI.getWorkbench().getEditorRegistry().getImageDescriptor(
+			    	file.getName(), contentType);
 			
 			return (Image) imageDescriptor.createImage();
 		}
 	}
 	
 	public String getText(Object element) {
-		return ((TreeNode) element).getText();
+		TreeNode e = (TreeNode) element;
+	
+		// Get the base path of the string
+		String filePath = e.getText();
+		String[] parts = filePath.split("/");
+		StringBuilder file = new StringBuilder(parts[parts.length - 1]);
+		
+		// Append the score to the file if the type is not a folder
+		if(!e.hasChildren()) {
+    		file.append("    -    Score: ");
+    		DecimalFormat df = new DecimalFormat("0.000");
+    		file.append(String.valueOf(df.format(e.getScore())));
+		}
+		
+		return file.toString();
 	}
 
 }
