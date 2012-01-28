@@ -12,7 +12,6 @@ public class TreeNode {
 	public TreeNode(String text) {
 		this.text = text;
 		this.parent = null;
-		this.score = score;
 		
 		this.children = new ArrayList<TreeNode>();
 	}
