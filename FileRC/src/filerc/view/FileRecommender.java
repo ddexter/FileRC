@@ -10,8 +10,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -48,8 +51,7 @@ public class FileRecommender extends ViewPart {
 					IWorkbenchPage page = PlatformUI.getWorkbench().
 						getActiveWorkbenchWindow().getActivePage();
 					try {
-						page.openEditor(new FileEditorInput(file), 
-							"org.eclipse.ui.DefaultTextEditor");
+		                IDE.openEditor(page, file);
 					} catch (PartInitException e) {
 						System.err.println(
 							"Error in FileRecommender.createPartControl():");

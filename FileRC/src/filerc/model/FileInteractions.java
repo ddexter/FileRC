@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
@@ -106,7 +105,7 @@ public class FileInteractions {
 	}
 	
 	public ArrayList<TreeNode> getSamplesTree() {
-		String project = this.recentFile.getProject();
+		String project = recentFile.getProject();
 		ArrayList<TreeNode> samplesTree = new ArrayList<TreeNode>();
 		Set<Pair> projFiles = new HashSet<Pair>();
 		HashMap<Row, Integer> simMtx = new HashMap<Row, Integer>();
@@ -179,10 +178,8 @@ public class FileInteractions {
 		Collections.reverse(scores);
 		ArrayList<TreeNode> children = new ArrayList<TreeNode>();
 		for(int i = 0; i < scores.size(); ++i) {
-			children.add(new TreeNode(scores.get(i).getFile()));
+			samplesTree.add(new TreeNode(scores.get(i).getFile()));
 		}
-		
-		samplesTree.add(new TreeNode(project, children));
 		
 		return samplesTree;
 	}
