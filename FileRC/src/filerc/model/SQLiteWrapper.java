@@ -135,7 +135,7 @@ public class SQLiteWrapper {
 		
 	}
 	
-	private void createTable(String table) {
+	public void createTable(String table) {
 		// Ensure that the table does not already exist for this project
 		if(tableExists(table)) {
 			System.err.println("SQLiteWrapper.createTable(String):");
@@ -150,7 +150,7 @@ public class SQLiteWrapper {
 		"project varchar(100) NOT NULL," +
 		"interaction_count INTEGER NOT NULL DEFAULT 0," +
 		"scm_count INTEGER NOT NULL DEFAULT 0," +
-		"static_code_count INTEGER NOT NULL DEFAULT 0" + 
+		"static_code_count INTEGER NOT NULL DEFAULT 0," + 
 		"PRIMARY KEY (file1, file2, project))";
 		/*
 		 * Surround table name with identifier quotes to protect against
@@ -208,7 +208,7 @@ public class SQLiteWrapper {
 	}
 	
 	@SuppressWarnings("unused")
-	private void deleteTable(String table) {
+	public void deleteTable(String table) {
 		// Ensure that table exists
 		if(!tableExists(table)) {
 			System.err.println("SQLiteWrapper.deleteTable(String)");

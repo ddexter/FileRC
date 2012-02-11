@@ -69,13 +69,33 @@ public class DBMonitor extends ViewPart {
 				}
 			});
 			
-			// Column 4: Count
-			col = createTableViewerColumn("Count", 100, 0);
+			// Column 4: Interaction count
+			col = createTableViewerColumn("Interaction Count", 100, 0);
 			col.setLabelProvider(new ColumnLabelProvider() {
 				@Override
 				public String getText(Object element) {
 					Row row = (Row) element;
 					return Integer.toString(row.getInteractionCount());
+				}
+			});
+			
+			// Column 5: SCM commit count
+			col = createTableViewerColumn("SCM Count", 100, 0);
+			col.setLabelProvider(new ColumnLabelProvider() {
+				@Override
+				public String getText(Object element) {
+					Row row = (Row) element;
+					return Integer.toString(row.getScmCount());
+				}
+			});
+			
+			// Column 6: Static code commit count
+			col = createTableViewerColumn("Static Code Count", 100, 0);
+			col.setLabelProvider(new ColumnLabelProvider() {
+				@Override
+				public String getText(Object element) {
+					Row row = (Row) element;
+					return Integer.toString(row.getStaticCodeCount());
 				}
 			});
 	}
