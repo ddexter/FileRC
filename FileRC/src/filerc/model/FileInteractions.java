@@ -48,7 +48,7 @@ public class FileInteractions {
 		recentFile = new Pair("", "");
 	}
 	
-	public void addCounts(Pair openedFile) {
+	public void addInteractionCounts(Pair openedFile) {
 		ArrayList<Pair> pairs = listOpenFiles();
 		ArrayList<Row> rows = new ArrayList<Row>();
 		
@@ -70,16 +70,18 @@ public class FileInteractions {
 				 * initialize it with a count of 1
 				 */
 				if(db.entryExists(row)) {
-					db.incCount(row);
+					db.incCount(row, SQLiteWrapper.INTERACTION_COUNT);
 				}
 				else {
-					row.setCount(1);
+					row.setInteractionCount(1);
+					row.setScmCount(0);
+					row.setStaticCodeCount(0);
 					db.addRow(row);
 				}
 				
 				// Increment total file interaction counter for each open file
 				if(!pair.equals(openedFile))
-					db.incCount(selfRow);
+					db.incCount(selfRow, SQLiteWrapper.INTERACTION_COUNT);
 			}
 		}
 	}
@@ -125,7 +127,7 @@ public class FileInteractions {
 		for(Row r : projQueries) {
 			projFiles.add(new Pair(r.getFile1(), project));
 			projFiles.add(new Pair(r.getFile2(), project));
-			simMtx.put(r, r.getCount());
+			simMtx.put(r, r.getInteractionCount());
 		}
 		
 		// Convert these sets to arraylists to access get method
@@ -223,7 +225,8 @@ public class FileInteractions {
 						
 						int index = projQueries.indexOf(r);
 						if(index > 0 && index < projQueries.size()) {
-							sims[j] = projQueries.get(index).getCount();
+							sims[j] =
+								projQueries.get(index).getInteractionCount();
 						} else {
 							sims[j] = 0;
 						}

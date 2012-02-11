@@ -75,7 +75,7 @@ public class DBMonitor extends ViewPart {
 				@Override
 				public String getText(Object element) {
 					Row row = (Row) element;
-					return Integer.toString(row.getCount());
+					return Integer.toString(row.getInteractionCount());
 				}
 			});
 	}
