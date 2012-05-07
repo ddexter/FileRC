@@ -14,8 +14,6 @@ import java.util.Set;
 public class SQLiteWrapper {
 	// These values are used to specify the type of count to increment
 	public static final String INTERACTION_COUNT = "interaction_count";
-	public static final String SCM_COUNT = "scm_count";
-	public static final String STATIC_CODE_COUNT = "static_code_count";
 	private static final String DEFAULT_DB = "FileTrackerDB";
 	private static final String Q = "\""; // Quote character used by SQLite
 	
@@ -44,14 +42,14 @@ public class SQLiteWrapper {
 	private void addRow(Row row) {
 		// Check that a duplicate entry does not exist
 		if(entryExists(row)) {
-			System.err.println("Method SQLiteWrapper.addPair(Row):");
+			System.err.println("Method SQLiteWrapper.addRow(Row):");
 			System.err.println("Row already exists");
 			return;
 		}
 		
 		PreparedStatement stmt = null;
 		
-		String sql = "INSERT INTO samples VALUES(?,?,?,?,?,?)";
+		String sql = "INSERT INTO samples VALUES(?,?,?,?)";
 		/*
 		 * Surround table name with identifier quotes to protect against
 		 * SQL injections
@@ -63,24 +61,17 @@ public class SQLiteWrapper {
 			stmt.setString(1, row.getFile1());
 			stmt.setString(2, row.getFile2());
 			stmt.setString(3, row.getProject());
-			/*
-			 * Row 4: File interactions
-			 * Row 5: SCM commits
-			 * Row 6: Static code dependencies
-			 */
 			stmt.setInt(4, row.getInteractionCount());
-			stmt.setInt(5, row.getScmCount());
-			stmt.setInt(6, row.getStaticCodeCount());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			System.err.println("Method SQLiteWrapper.addPair(Row):");
+			System.err.println("Method SQLiteWrapper.addRow(Row):");
 			System.err.println(e.getMessage());
 		} finally {
 			if(stmt != null)
 				try {
 					stmt.close();
 				} catch (SQLException e) {
-					System.err.println("Method SQLiteWrapper.addPair(Row):");
+					System.err.println("Method SQLiteWrapper.addRow(Row):");
 					System.err.println(e.getMessage());
 				}
 		}
@@ -149,8 +140,6 @@ public class SQLiteWrapper {
 		"file2 varchar(200) NOT NULL," +
 		"project varchar(100) NOT NULL," +
 		"interaction_count INTEGER NOT NULL DEFAULT 0," +
-		"scm_count INTEGER NOT NULL DEFAULT 0," +
-		"static_code_count INTEGER NOT NULL DEFAULT 0," + 
 		"PRIMARY KEY (file1, file2, project))";
 		/*
 		 * Surround table name with identifier quotes to protect against
@@ -207,7 +196,6 @@ public class SQLiteWrapper {
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	public void deleteTable(String table) {
 		// Ensure that table exists
 		if(!tableExists(table)) {
@@ -305,11 +293,8 @@ public class SQLiteWrapper {
 				String f2 = rs.getString("file2");
 				String p = rs.getString("project");
 				int interactionCount = rs.getInt("interaction_count");
-				int scmCount = rs.getInt("scm_count");
-				int staticCodeCount = rs.getInt("static_code_count");
 				
-				ret.add(new Row(interactionCount, scmCount, staticCodeCount,
-					f1, f2, p));
+				ret.add(new Row(f1, f2, p, interactionCount));
 			}
 		} catch (SQLException e) {
 			System.err.println("SQLiteWrapper.getTable(String):");
@@ -372,11 +357,8 @@ public class SQLiteWrapper {
 				String f2 = rs.getString("file2");
 				String p = rs.getString("project");
 				int interactionCount = rs.getInt("interaction_count");
-				int scmCount = rs.getInt("scm_count");
-				int staticCodeCount = rs.getInt("static_code_count");
 				
-				ret.add(new Row(interactionCount, scmCount, staticCodeCount,
-					f1, f2, p));
+				ret.add(new Row(f1, f2, p, interactionCount));
 			}
 		} catch (SQLException e) {
 			System.err.println("SQLiteWrapper.getTable(String):");
@@ -413,11 +395,8 @@ public class SQLiteWrapper {
 				String f1 = rs.getString("file1");
 				String f2 = rs.getString("file2");
 				int interactionCount = rs.getInt("interaction_count");
-				int scmCount = rs.getInt("scm_count");
-				int staticCodeCount = rs.getInt("static_code_count");
 				
-				ret.add(new Row(interactionCount, scmCount, staticCodeCount,
-					f1, f2, pair.getProject()));
+				ret.add(new Row(f1, f2, pair.getProject(), interactionCount));
 			}
 		} catch (SQLException e) {
 			System.err.println("SQLiteWrapper.getRelatedElements(Pair)");
@@ -456,14 +435,9 @@ public class SQLiteWrapper {
 		
 		// Create the strings for incrementing each type of count
 		String interactionCount = "INTERACTION_COUNT = INTERACTION_COUNT + " +
-			Integer.toString(row.getInteractionCount()) + ", ";
-		String scmCount = "SCM_COUNT = SCM_COUNT + " +
-			Integer.toString(row.getScmCount()) + ", ";
-		String staticCodeCount = "STATIC_CODE_COUNT = STATIC_CODE_COUNT + " +
-			Integer.toString(row.getStaticCodeCount()) + " ";
+			Integer.toString(row.getInteractionCount()) + " ";
 		
-		String sql = "UPDATE samples " +
-		    "SET " + interactionCount + scmCount + staticCodeCount + 
+		String sql = "UPDATE samples " + "SET " + interactionCount +
 			"WHERE file1 = ? AND file2 = ? AND project = ?";
 		
 		// Ensure that the entry exists and create a new entry if it does not

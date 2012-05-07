@@ -47,8 +47,7 @@ public class FileInteractions {
 		recentFile = new Pair("", "");
 	}
 
-	public void incPairwiseCounts(ArrayList<Pair> pairs, int count,
-		String countType) {
+	public void incPairwiseCounts(ArrayList<Pair> pairs, int count) {
 		
 		int numFiles = pairs.size();
 		for(int i = 0; i < numFiles; ++i) {
@@ -58,7 +57,7 @@ public class FileInteractions {
 					
 					Row row = new Row(pairs.get(i).getFile(),
 						pairs.get(j).getFile(), pairs.get(i).getProject(),
-						count, countType);
+						count);
 					
 					db.incCount(row);
 				}
@@ -66,10 +65,9 @@ public class FileInteractions {
 		}
 	}
 	
-	public void incPairwiseCounts(ArrayList<Pair> pairs,
-		String countType) {
+	public void incPairwiseCounts(ArrayList<Pair> pairs) {
 		
-		incPairwiseCounts(pairs, 1, countType);
+		incPairwiseCounts(pairs, 1);
 	}
 	
 	public void addInteractionCounts(Pair openedFile) {
@@ -82,10 +80,10 @@ public class FileInteractions {
 			 * just counts how many times each file is opened (with itself).
 			 */
 			if(openedFile.getProject().equals(pair.getProject())) {
-				Row row = new Row(1, 0, 0, openedFile.getFile(), pair.getFile(),
-					openedFile.getProject());
-				Row selfRow = new Row(1, 0, 0, pair.getFile(), pair.getFile(),
-					pair.getProject());
+				Row row = new Row(openedFile.getFile(), pair.getFile(),
+					openedFile.getProject(), 1);
+				Row selfRow = new Row(pair.getFile(), pair.getFile(),
+					pair.getProject(), 1);
 				
 				db.incCount(row);
 				

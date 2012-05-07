@@ -1,50 +1,25 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FileRC
-<<<<<<< HEAD
-Bundle-SymbolicName: FileRC
-Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .
-Bundle-Activator: filerc.FileRC
-Export-Package: filerc,
- filerc.model,
- filerc.view
-Require-Bundle: JavaML;bundle-version="1.0.0",
- ApacheCommonsLang3;bundle-version="1.0.0",
- org.eclipse.ui,
-=======
 Bundle-SymbolicName: FileRC;singleton:=true
-Bundle-Version: 1.1.4
+Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .,
  lib/commons-lang3-3.1.jar,
  lib/javaml-0.1.6.jar,
- lib/sqlite-jdbc-3.7.2.jar,
- lib/svnkit-1.3.5.jar
-Bundle-Activator: filerc.Activator
+ lib/sqlite-jdbc-3.7.2.jar
+Bundle-Activator: filerc.FileRC
 Export-Package: filerc,
  filerc.model,
  filerc.view,
  lib
 Require-Bundle: org.eclipse.ui,
->>>>>>> 163ae6b3dba2338f6072df7f44acf2bcd29d21a7
  org.eclipse.core.runtime,
  org.eclipse.ui.ide;bundle-version="3.5.2",
  org.eclipse.ui.views;bundle-version="3.4.1",
  org.eclipse.core.resources;bundle-version="3.5.2",
-<<<<<<< HEAD
- SQLiteJDBC;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Import-Package: org.eclipse.jdt.ui
-=======
- org.junit,
- org.eclipse.jdt.core;bundle-version="3.7.1",
  org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.ui,
- org.eclipse.core.runtime,
- ca.mcgill.cs.swevo.jayfx;bundle-version="0.0.3",
  org.eclipse.jdt.ui;bundle-version="3.7.2",
- SCMCrawler;bundle-version="1.0.0"
+ org.eclipse.jdt.core;bundle-version="3.7.3"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
->>>>>>> 163ae6b3dba2338f6072df7f44acf2bcd29d21a7
 Bundle-ActivationPolicy: lazy

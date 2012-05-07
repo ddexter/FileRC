@@ -25,12 +25,6 @@
 			class="filerc.view.FileRecommender"
 			id="filerc.view.FR">
 		</view>
-		<view
-			name="FileRC - File Clusters"
-			category="FileRC"
-			class="filerc.view.ClusterFinder"
-			id="filerc.view.FC">
-		</view>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -58,20 +52,6 @@
          		</action>
          </viewContribution>
     </extension>
-        <extension
-            point="org.eclipse.ui.viewActions">
-         <viewContribution
-         	id="filerc.FCAnalyzerVC"
-         	targetID="filerc.view.FC">
-         		<action
-         			id="filerc.FCAnalyzerVA"
-         			class="filerc.FCAnalyzerVAD"
-         			label="Find Clusters"
-         			toolbarPath="analyze"
-         			style="push">
-         		</action>
-         </viewContribution>
-      </extension>
 		<extension
             point="org.eclipse.ui.viewActions">
          <viewContribution
@@ -81,20 +61,6 @@
          			id="filerc.ClearSamplesVA"
          			class="filerc.ClearSamplesVAD"
          			label="Clear Samples"
-         			toolbarPath="DB"
-         			style="push">
-         		</action>
-         </viewContribution>
-      </extension>
-		<extension
-            point="org.eclipse.ui.viewActions">
-         <viewContribution
-         	id="filerc.AddScmVC"
-         	targetID="filerc.view.DBM">
-         		<action
-         			id="filerc.AddScmVA"
-         			class="filerc.AddScmVAD"
-         			label="Add SCM Entries"
          			toolbarPath="DB"
          			style="push">
          		</action>

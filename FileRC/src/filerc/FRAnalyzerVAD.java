@@ -13,6 +13,7 @@ public class FRAnalyzerVAD implements IViewActionDelegate {
 
 	@Override
 	public void run(IAction action) {
+		System.out.println("here");
 		FileInteractions model = FileInteractions.getInstance();
 		
 		view.getViewer().setInput(model.getSamplesTree());
