@@ -40,17 +40,40 @@ public class FileInteractions {
 	
 	public FileInteractions(IWorkbench workbench, String dbName) {
 		this.dbName = dbName;
-		//view = new View();
 		this.workbench = workbench;
 		
 		db = new SQLiteWrapper(this.dbName);
 		
 		recentFile = new Pair("", "");
 	}
+
+	public void incPairwiseCounts(ArrayList<Pair> pairs, int count,
+		String countType) {
+		
+		int numFiles = pairs.size();
+		for(int i = 0; i < numFiles; ++i) {
+			for(int j = i + 1; j < numFiles; ++j) {
+				if(pairs.get(i).getProject().equals(
+					pairs.get(j).getProject())) {
+					
+					Row row = new Row(pairs.get(i).getFile(),
+						pairs.get(j).getFile(), pairs.get(i).getProject(),
+						count, countType);
+					
+					db.incCount(row);
+				}
+			}
+		}
+	}
+	
+	public void incPairwiseCounts(ArrayList<Pair> pairs,
+		String countType) {
+		
+		incPairwiseCounts(pairs, 1, countType);
+	}
 	
 	public void addInteractionCounts(Pair openedFile) {
 		ArrayList<Pair> pairs = listOpenFiles();
-		ArrayList<Row> rows = new ArrayList<Row>();
 		
 		// Update database file pair count for all files in the same project
 		for(Pair pair : pairs) {
@@ -59,29 +82,16 @@ public class FileInteractions {
 			 * just counts how many times each file is opened (with itself).
 			 */
 			if(openedFile.getProject().equals(pair.getProject())) {
-				Row row = new Row(openedFile.getFile(), pair.getFile(),
+				Row row = new Row(1, 0, 0, openedFile.getFile(), pair.getFile(),
 					openedFile.getProject());
-				rows.add(row);
-				Row selfRow = new Row(pair.getFile(), pair.getFile(),
+				Row selfRow = new Row(1, 0, 0, pair.getFile(), pair.getFile(),
 					pair.getProject());
 				
-				/*
-				 * Increment the entry count if it exists, otherwise
-				 * initialize it with a count of 1
-				 */
-				if(db.entryExists(row)) {
-					db.incCount(row, SQLiteWrapper.INTERACTION_COUNT);
-				}
-				else {
-					row.setInteractionCount(1);
-					row.setScmCount(0);
-					row.setStaticCodeCount(0);
-					db.addRow(row);
-				}
+				db.incCount(row);
 				
 				// Increment total file interaction counter for each open file
 				if(!pair.equals(openedFile))
-					db.incCount(selfRow, SQLiteWrapper.INTERACTION_COUNT);
+					db.incCount(selfRow);
 			}
 		}
 	}

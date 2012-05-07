@@ -41,7 +41,7 @@ public class SQLiteWrapper {
 		
 	}
 	
-	public void addRow(Row row) {
+	private void addRow(Row row) {
 		// Check that a duplicate entry does not exist
 		if(entryExists(row)) {
 			System.err.println("Method SQLiteWrapper.addPair(Row):");
@@ -451,16 +451,23 @@ public class SQLiteWrapper {
 	}
 	
 	// Assumes that the entry exists, if not, creates it
-	public void incCount(Row row, String countType) {
+	public void incCount(Row row) {
 		PreparedStatement stmt = null;
+		
+		// Create the strings for incrementing each type of count
+		String interactionCount = "INTERACTION_COUNT = INTERACTION_COUNT + " +
+			Integer.toString(row.getInteractionCount()) + ", ";
+		String scmCount = "SCM_COUNT = SCM_COUNT + " +
+			Integer.toString(row.getScmCount()) + ", ";
+		String staticCodeCount = "STATIC_CODE_COUNT = STATIC_CODE_COUNT + " +
+			Integer.toString(row.getStaticCodeCount()) + " ";
+		
 		String sql = "UPDATE samples " +
-		    "SET " + countType + " = " + countType + " + 1 " +
+		    "SET " + interactionCount + scmCount + staticCodeCount + 
 			"WHERE file1 = ? AND file2 = ? AND project = ?";
 		
-		// Ensure that the entry exists
+		// Ensure that the entry exists and create a new entry if it does not
 		if(!entryExists(row)) {
-			System.err.println("SQLiteWrapper.incInteractionCount(Row):");
-			System.err.println("Row does not exist, creating row");
 			addRow(row);
 		}
 		else {

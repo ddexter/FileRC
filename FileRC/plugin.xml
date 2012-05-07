@@ -72,7 +72,7 @@
          		</action>
          </viewContribution>
       </extension>
-        <extension
+		<extension
             point="org.eclipse.ui.viewActions">
          <viewContribution
          	id="filerc.ClearSamplesVC"
@@ -81,6 +81,20 @@
          			id="filerc.ClearSamplesVA"
          			class="filerc.ClearSamplesVAD"
          			label="Clear Samples"
+         			toolbarPath="DB"
+         			style="push">
+         		</action>
+         </viewContribution>
+      </extension>
+		<extension
+            point="org.eclipse.ui.viewActions">
+         <viewContribution
+         	id="filerc.AddScmVC"
+         	targetID="filerc.view.DBM">
+         		<action
+         			id="filerc.AddScmVA"
+         			class="filerc.AddScmVAD"
+         			label="Add SCM Entries"
          			toolbarPath="DB"
          			style="push">
          		</action>

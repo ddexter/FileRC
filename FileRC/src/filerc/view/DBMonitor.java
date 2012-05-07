@@ -14,7 +14,6 @@ import org.eclipse.ui.part.ViewPart;
 import filerc.model.Row;
 
 public class DBMonitor extends ViewPart {
-	
 	private TableViewer viewer;
 
 	@Override

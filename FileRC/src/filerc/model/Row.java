@@ -24,6 +24,19 @@ public class Row {
 		this.project = project;
 	}
 	
+	public Row(String file1, String file2, String project, int count,
+		String countType) {
+		interactionCount = 0;
+		scmCount = 0;
+		staticCodeCount = 0;
+		this.file1 = file1;
+		this.file2 = file2;
+		sort();
+		this.project = project;
+		
+		setCount(count, countType);
+	}
+	
 	public Row(int interactionCount, int scmCount, int staticCodeCount,
 		String file1, String file2, String project) {
 		
@@ -70,6 +83,19 @@ public class Row {
 	
 	public void setStaticCodeCount(int staticCodeCount) {
 		this.staticCodeCount = staticCodeCount;
+	}
+	
+	public void setCount(int count, String countType) {
+		if(countType.equals(SQLiteWrapper.INTERACTION_COUNT)) {
+			interactionCount = count;
+		}
+		else if (countType.equals(SQLiteWrapper.SCM_COUNT)) {
+			scmCount = count;
+		}
+		else if (countType.equals(SQLiteWrapper.STATIC_CODE_COUNT)) {
+			staticCodeCount = count;
+		}
+		else {}
 	}
 	
 	public void setFile1(String file1) {
