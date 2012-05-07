@@ -14,14 +14,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
-import net.sf.javaml.clustering.Clusterer;
-import net.sf.javaml.clustering.mcl.MCL;
-import net.sf.javaml.core.Dataset;
-import net.sf.javaml.core.DefaultDataset;
-import net.sf.javaml.core.DenseInstance;
-import net.sf.javaml.distance.CosineSimilarity;
-import net.sf.javaml.filter.normalize.NormalizeMidrange;
-
 // Singleton pattern for accessing the entire model
 public class FileInteractions {
 	private static FileInteractions instance;
@@ -186,80 +178,6 @@ public class FileInteractions {
 		}
 		
 		return samplesTree;
-	}
-	
-	public ArrayList<TreeNode> getClusters() {
-		ArrayList<TreeNode> ret = new ArrayList<TreeNode>();
-		ArrayList<String> projects = db.getProjectNames();
-		
-		
-		// Get all related entries for each open file and project
-		for(String project : projects) {
-			TreeNode projectTN = new TreeNode(project);
-			Dataset data = new DefaultDataset();
-			Set<Pair> projFiles = new HashSet<Pair>();
-			
-			ArrayList<Row> projQueries = 
-				db.getProjectSamples(project);
-		
-			// Add all file names to the projFiles list
-			for(Row r : projQueries) {
-				projFiles.add(new Pair(r.getFile1(), project));
-				projFiles.add(new Pair(r.getFile2(), project));
-			}
-			
-			ArrayList<Pair> pF = new ArrayList<Pair>(projFiles);
-			
-			// Add pairwise distances to data set for every file
-			int pFSize = pF.size();
-			for(int i = 0; i < pFSize; ++i) {
-				double[] sims = new double[pF.size()];
-				for(int j = 0; j < pFSize; ++j) {
-					if(i == j) {
-						sims[j] = 0;
-					} else {
-						Row r = new Row(pF.get(i).getFile(),
-							pF.get(j).getFile(), project);
-						
-						int index = projQueries.indexOf(r);
-						if(index > 0 && index < projQueries.size()) {
-							sims[j] = projQueries.get(index).getCount();
-						} else {
-							sims[j] = 0;
-						}
-					}
-				}
-				data.add(new DenseInstance(sims, pF.get(i).getFile()));
-			}
-			
-			// Normalize the data
-			NormalizeMidrange nmr = new NormalizeMidrange(0.5, 1);
-			nmr.build(data);
-			nmr.filter(data);
-			
-			// Run the MCL clustering algorithm
-			Clusterer mcl =
-				new MCL(new CosineSimilarity());
-				//new MCL(new NormalizedEuclideanSimilarity(data));
-			Dataset[] clusters = mcl.cluster(data);
-			
-			// New tree node for each cluster
-			for(int i = 0; i < clusters.length; ++i) {
-				Dataset cluster = clusters[i];
-				TreeNode clusterTN = new TreeNode(Integer.toString(i));
-				
-				ArrayList<TreeNode> children = new ArrayList<TreeNode>();
-				for(Object file : cluster.classes())
-					children.add(new TreeNode(file.toString()));
-				
-				clusterTN.addChildren(children);
-				projectTN.addChild(clusterTN);
-			}
-			
-			ret.add(projectTN);
-		}
-		
-		return ret;
 	}
 	
 	public ArrayList<Row> getProjectSamples(String project) {
