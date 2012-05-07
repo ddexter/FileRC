@@ -14,6 +14,14 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import net.sf.javaml.clustering.Clusterer;
+import net.sf.javaml.clustering.mcl.MCL;
+import net.sf.javaml.core.Dataset;
+import net.sf.javaml.core.DefaultDataset;
+import net.sf.javaml.core.DenseInstance;
+import net.sf.javaml.distance.CosineSimilarity;
+import net.sf.javaml.filter.normalize.NormalizeMidrange;
+
 // Singleton pattern for accessing the entire model
 public class FileInteractions {
 	private static FileInteractions instance;
@@ -32,17 +40,40 @@ public class FileInteractions {
 	
 	public FileInteractions(IWorkbench workbench, String dbName) {
 		this.dbName = dbName;
-		//view = new View();
 		this.workbench = workbench;
 		
 		db = new SQLiteWrapper(this.dbName);
 		
 		recentFile = new Pair("", "");
 	}
+
+	public void incPairwiseCounts(ArrayList<Pair> pairs, int count,
+		String countType) {
+		
+		int numFiles = pairs.size();
+		for(int i = 0; i < numFiles; ++i) {
+			for(int j = i + 1; j < numFiles; ++j) {
+				if(pairs.get(i).getProject().equals(
+					pairs.get(j).getProject())) {
+					
+					Row row = new Row(pairs.get(i).getFile(),
+						pairs.get(j).getFile(), pairs.get(i).getProject(),
+						count, countType);
+					
+					db.incCount(row);
+				}
+			}
+		}
+	}
 	
-	public void addCounts(Pair openedFile) {
+	public void incPairwiseCounts(ArrayList<Pair> pairs,
+		String countType) {
+		
+		incPairwiseCounts(pairs, 1, countType);
+	}
+	
+	public void addInteractionCounts(Pair openedFile) {
 		ArrayList<Pair> pairs = listOpenFiles();
-		ArrayList<Row> rows = new ArrayList<Row>();
 		
 		// Update database file pair count for all files in the same project
 		for(Pair pair : pairs) {
@@ -51,23 +82,12 @@ public class FileInteractions {
 			 * just counts how many times each file is opened (with itself).
 			 */
 			if(openedFile.getProject().equals(pair.getProject())) {
-				Row row = new Row(openedFile.getFile(), pair.getFile(),
+				Row row = new Row(1, 0, 0, openedFile.getFile(), pair.getFile(),
 					openedFile.getProject());
-				rows.add(row);
-				Row selfRow = new Row(pair.getFile(), pair.getFile(),
+				Row selfRow = new Row(1, 0, 0, pair.getFile(), pair.getFile(),
 					pair.getProject());
 				
-				/*
-				 * Increment the entry count if it exists, otherwise
-				 * initialize it with a count of 1
-				 */
-				if(db.entryExists(row)) {
-					db.incCount(row);
-				}
-				else {
-					row.setCount(1);
-					db.addRow(row);
-				}
+				db.incCount(row);
 				
 				// Increment total file interaction counter for each open file
 				if(!pair.equals(openedFile))
@@ -117,7 +137,7 @@ public class FileInteractions {
 		for(Row r : projQueries) {
 			projFiles.add(new Pair(r.getFile1(), project));
 			projFiles.add(new Pair(r.getFile2(), project));
-			simMtx.put(r, r.getCount());
+			simMtx.put(r, r.getInteractionCount());
 		}
 		
 		// Convert these sets to arraylists to access get method
@@ -178,6 +198,81 @@ public class FileInteractions {
 		}
 		
 		return samplesTree;
+	}
+	
+	public ArrayList<TreeNode> getClusters() {
+		ArrayList<TreeNode> ret = new ArrayList<TreeNode>();
+		ArrayList<String> projects = db.getProjectNames();
+		
+		
+		// Get all related entries for each open file and project
+		for(String project : projects) {
+			TreeNode projectTN = new TreeNode(project);
+			Dataset data = new DefaultDataset();
+			Set<Pair> projFiles = new HashSet<Pair>();
+			
+			ArrayList<Row> projQueries = 
+				db.getProjectSamples(project);
+		
+			// Add all file names to the projFiles list
+			for(Row r : projQueries) {
+				projFiles.add(new Pair(r.getFile1(), project));
+				projFiles.add(new Pair(r.getFile2(), project));
+			}
+			
+			ArrayList<Pair> pF = new ArrayList<Pair>(projFiles);
+			
+			// Add pairwise distances to data set for every file
+			int pFSize = pF.size();
+			for(int i = 0; i < pFSize; ++i) {
+				double[] sims = new double[pF.size()];
+				for(int j = 0; j < pFSize; ++j) {
+					if(i == j) {
+						sims[j] = 0;
+					} else {
+						Row r = new Row(pF.get(i).getFile(),
+							pF.get(j).getFile(), project);
+						
+						int index = projQueries.indexOf(r);
+						if(index > 0 && index < projQueries.size()) {
+							sims[j] =
+								projQueries.get(index).getInteractionCount();
+						} else {
+							sims[j] = 0;
+						}
+					}
+				}
+				data.add(new DenseInstance(sims, pF.get(i).getFile()));
+			}
+			
+			// Normalize the data
+			NormalizeMidrange nmr = new NormalizeMidrange(0.5, 1);
+			nmr.build(data);
+			nmr.filter(data);
+			
+			// Run the MCL clustering algorithm
+			Clusterer mcl =
+				new MCL(new CosineSimilarity());
+				//new MCL(new NormalizedEuclideanSimilarity(data));
+			Dataset[] clusters = mcl.cluster(data);
+			
+			// New tree node for each cluster
+			for(int i = 0; i < clusters.length; ++i) {
+				Dataset cluster = clusters[i];
+				TreeNode clusterTN = new TreeNode(Integer.toString(i));
+				
+				ArrayList<TreeNode> children = new ArrayList<TreeNode>();
+				for(Object file : cluster.classes())
+					children.add(new TreeNode(file.toString()));
+				
+				clusterTN.addChildren(children);
+				projectTN.addChild(clusterTN);
+			}
+			
+			ret.add(projectTN);
+		}
+		
+		return ret;
 	}
 	
 	public ArrayList<Row> getProjectSamples(String project) {

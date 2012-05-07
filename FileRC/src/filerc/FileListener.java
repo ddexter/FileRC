@@ -81,7 +81,7 @@ public class FileListener {
     			FileInteractions model = FileInteractions.getInstance();
 			
 			    Pair newFile = extractFilePair(partRef);
-					model.addCounts(newFile);
+					model.addInteractionCounts(newFile);
 					
 					// Store the file as the most recently visited
 					model.updateRecentFile(newFile);

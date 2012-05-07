@@ -7,21 +7,42 @@ import java.util.Locale;
 
 // file1, file2 will always be ordered alphabetically
 public class Row {
-	private int count;
+	private int interactionCount;
+	private int scmCount;
+	private int staticCodeCount;
 	private String file1;
 	private String file2;
 	private String project;
 
 	public Row(String file1, String file2, String project) {
-		count = 0;
+		interactionCount = 0;
+		scmCount = 0;
+		staticCodeCount = 0;
 		this.file1 = file1;
 		this.file2 = file2;
 		sort();
 		this.project = project;
 	}
 	
-	public Row(int count, String file1, String file2, String project) {
-		this.count = count;
+	public Row(String file1, String file2, String project, int count,
+		String countType) {
+		interactionCount = 0;
+		scmCount = 0;
+		staticCodeCount = 0;
+		this.file1 = file1;
+		this.file2 = file2;
+		sort();
+		this.project = project;
+		
+		setCount(count, countType);
+	}
+	
+	public Row(int interactionCount, int scmCount, int staticCodeCount,
+		String file1, String file2, String project) {
+		
+		this.interactionCount = interactionCount;
+		this.scmCount = scmCount;
+		this.staticCodeCount = staticCodeCount;
 		this.file1 = file1;
 		this.file2 = file2;
 		sort();
@@ -40,12 +61,41 @@ public class Row {
 		return project;
 	}
 	
-	public int getCount() {
-		return count;
+	public int getInteractionCount() {
+		return interactionCount;
 	}
 	
-	public void setCount(int count) {
-		this.count = count;
+	public int getScmCount() {
+		return scmCount;
+	}
+	
+	public int getStaticCodeCount() {
+		return staticCodeCount;
+	}
+	
+	public void setInteractionCount(int interactionCount) {
+		this.interactionCount = interactionCount;
+	}
+	
+	public void setScmCount(int scmCount) {
+		this.scmCount = scmCount;
+	}
+	
+	public void setStaticCodeCount(int staticCodeCount) {
+		this.staticCodeCount = staticCodeCount;
+	}
+	
+	public void setCount(int count, String countType) {
+		if(countType.equals(SQLiteWrapper.INTERACTION_COUNT)) {
+			interactionCount = count;
+		}
+		else if (countType.equals(SQLiteWrapper.SCM_COUNT)) {
+			scmCount = count;
+		}
+		else if (countType.equals(SQLiteWrapper.STATIC_CODE_COUNT)) {
+			staticCodeCount = count;
+		}
+		else {}
 	}
 	
 	public void setFile1(String file1) {
